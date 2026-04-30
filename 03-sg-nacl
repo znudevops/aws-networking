@@ -1,1 +1,46 @@
+Security Group:
+---------------
+A security group is a instance level firewall, can attached directly to servers ( EC2, RDS, etc.). and other resources.
+> It controlls what traffic is allowed in and out.
+> Stateful: If you allow inbound traffic, the return outbound traffic is automatically allowed (and vice versa).
+> Only allow rules (no deny)
+> By default outbound is allowed for all traffic for SG.
+
+Default behavior:
+  Inbound: Deny all by default.
+  Outbound: Allow all by default.
+
+Example:
+A web server in a public subnet:
+Inbound rule → allow TCP port 80 (HTTP) and 443 (HTTPS).
+Outbound rule → allow all (default).
+
+A database in a private subnet:
+Inbound rule → allow TCP port 3306 (MySQL) only from the application server’s Security Group.
+Outbound rule → allow all (default).
+
+Network ACLs (NACLs):
+---------------------
+A NACL is subnet level firewall, attach to subnet. the rules are apply to all resources inside the subnet.
+> It controls traffic entering and leaving an entire subnet.
+> Stateless: You must explicitly allow both inbound and outbound traffic. Return traffic is not automatically allowed.
+> Can have both allow and deny rules.
+> NACLs evaluate rules in order (lowest number first) until a match is found.
+
+Default behavior:
+  Inbound: Deny all by default.
+  Outbound: Deny all by default.
+
+Example
+Suppose you want to allow HTTP traffic into a subnet:
+Inbound rule → allow TCP port 80 from 0.0.0.0/0.
+Outbound rule → allow TCP port 1024–65535 (ephemeral ports) so responses can go back out.
+If you want to block a specific IP range, you can add a deny rule for that CIDR block.
+
+
+
+
+
+
+
 
