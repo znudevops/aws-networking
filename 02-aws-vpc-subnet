@@ -74,4 +74,28 @@ Commonly used for resources that should stay internal, such as:
 That’s why it’s “outbound only.”
 
 
+Inbound traffic → Data coming into your resources from outside.
+  > Users are accessing a web server hosted in EC2 server.
+  > SSH connection from your laptop into EC2 server.
+
+Outbound traffic → Data going out from your resources
+  > A server is downloading updates.
+
+
+Stateful rules → A stateful firewall remember state of the connection.
+  > In AWS Security groups are stateful.
+  > If outbound is allowed, the return inbound is automatically allowed.
+    If your instance initiates a connection (say, downloading updates), the return inbound traffic is automatically allowed.
+  > You don’t need to explicitly add inbound rules for the return path.
+  > But you must explicitly configure inbound rules for the specific ports/protocols you want to accept (e.g., TCP 22 for SSH, TCP 80 for HTTP). 
+    Only then can an external client initiate a request. Once that inbound request is allowed, the return outbound traffic is automatically permitted.
+
+Stateless rules → A stateless firewall don’t remember anything(connection state). 
+You must explicitly allow both inbound and outbound directions (example: Network ACLs).
+  > If you allow the inbound traffic, you must allow outbound traffic for the response.
+EX: If you allow inbound HTTP port 80, you must also configure outbound rules to allow the return traffic,
+otherwise it will be dropped.
+
+
+
 
