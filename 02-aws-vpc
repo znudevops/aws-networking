@@ -7,25 +7,45 @@ AWS VPC is a logically isolated section of AWS where we can create resources in 
 It is AWS core networking service, It allow us to create secure, isolated section of cloud.
 It Provides control over IP addressing, routing, and security.
 
-VPC: An AWS VPC (Virtual Private Cloud) is a logically isolated section of the AWS cloud where you can create and manage resources in a secure and controlled environment.
-It is one of AWS’s core networking services, allowing you to build a secure, isolated portion of the cloud. 
-A VPC provides fine‑grained control over IP addressing, routing, and security, enabling you to design and manage your network architecture with flexibility and safety.
+VPC: An AWS VPC (Virtual Private Cloud) is a logically isolated section of the AWS cloud where you can create and manage resources 
+in a secure and controlled environment.
+> It is one of AWS’s core networking services, allowing you to build a secure, isolated network. 
+> It provides fine‑grained control over IP addressing, routing, and security, enabling you to design and 
+  manage your network with flexibility and safety.
+Limits:
+> By default, you can create up to 5 VPCs per Region in your AWS account.
+  However, this is a soft limit (quota) that you can increase to accommodate hundreds of VPCs per Region.
+> Max CIDR per VPC is 5 (1 primary and 4 secondary) per VPC.
+  This limit is adjustable up to 50 via a service quota increase
+  . Min size is /28 (16 IP)
+  . Max size is /16 (65536)
 
 Subnet:
 -------
 A subnet is a smaller part of your VPC’s IP address range.
-Subnets use the VPC’s CIDR block (its defined IP range).
 They help you organize and isolate resources within different sections of the VPC network.
 Each subnet is tied to one Availability Zone in a region.
 You can create multiple subnets across different Availability Zones to improve high availability and fault tolerance.
+> By default AWS reserves 5 IP addresses(first 4 and last 1) in each subnet.
+> These 5 IP addresses are not available for use and be assigned to an EC2 instances.
+Ex: If subnet block is 10.0.0.0/24
+then reserved IP address are
+10.0.0.0 - Network address
+10.0.0.1 - Reserved by AWS for the VPC router
+10.0.0.2 - Reserved by AWS for mapping to amazon provided DNS
+10.0.0.3 - Reserved by AWS for future use
+10.0.0.255 - Network broadcast address 
+AWS doesnot support broadcast in a VPC, So, the address is reserved.
 
 Public Subnet:
 ----------------
-A public subnet is a subnet, It associated with the Internet Gateway through route table.
+A public subnet is a subnet, It is associated with the Internet Gateway through route table.
 Resources in a public subnet (like EC2 instances) can be accessed directly from the internet if they have a public IP.
+
 The IGW supports two-way traffic both inbound and outbound:
-If a server is in a public subnet and has a public IP or Elastic IP, it can be accessed directly from the internet (e.g., via SSH, HTTP).
-From these servers can also access the internet to download software, packages, and updates.
+> If a server is in a public subnet and has a public IP or Elastic IP, it can be accessed directly from the internet (e.g., via SSH, HTTP).
+> From these servers can also access the internet to download software, packages, and updates.
+
 Example:  
 A web server in a public subnet with a public IP can be reached by users worldwide. 
 It can also install packages or update the system directly from the internet.
@@ -34,19 +54,22 @@ Commonly used for resources that need to be reachable, such as:
   - Load balancers  
 
 Private Subnet:
+---------------
 A private subnet does not have a direct route to the Internet Gateway.  
-Resources in a private subnet cannot be accessed directly from the internet. They can connect to the internet using a NAT Gateway or NAT Instance (for outbound traffic only). 
+Resources in a private subnet cannot be accessed directly from the internet. 
+They can connect to the internet using a NAT Gateway or NAT Instance (for outbound traffic only). 
+
 A NAT Gateway (or NAT Instance) is used by resources in private subnets to initiate outbound connections to the internet (e.g., downloading updates, calling APIs).
 Commonly used for resources that should stay internal, such as:  
   - Databases  
   - Application servers  
   - Backend services 
 
-Inbound traffic from the internet cannot directly reach private subnet resources through NAT.
-Servers in private subnets are not directly reachable. To access them, you typically use:
-Bastion Host / Jump Box: A secure EC2 instance in a public subnet that you connect to first, then “jump” into the private server.
-VPN Connection / Direct Connect: Establish a secure tunnel into the VPC, then access private servers as if you were inside the network.
-Load Balancer: Place a load balancer in a public subnet that forwards traffic to private subnet servers.
+> Inbound traffic from the internet cannot directly reach private subnet resources through NAT (Servers in private subnets are not directly reachable).
+> To access them, you typically use:
+   - Bastion Host / Jump Box: A secure EC2 instance in a public subnet that you connect to first, then “jump” into the private server.
+   - VPN Connection / Direct Connect: Establish a secure tunnel into the VPC, then access private servers as if you were inside the network.
+   - Load Balancer: Place a load balancer in a public subnet that forwards traffic to private subnet servers.
 
 That’s why it’s “outbound only.”
 
