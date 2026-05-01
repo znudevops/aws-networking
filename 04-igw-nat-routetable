@@ -1,0 +1,73 @@
+Route Table:
+--------------
+A Route Table in AWS is simply a list of rules (routes) that tells your VPC where to send network traffic.
+A Route Table is like a map for your VPC. It contains set of rules (routes) that tell traffic where to go.
+Each subnet in a VPC must be associated with a route table.
+
+Each rule has two parts:
+  Destination → the IP range you want to reach (e.g., 10.0.0.0/16, 0.0.0.0/0).
+  Target → where to send that traffic (local VPC, Internet Gateway, NAT Gateway, VPC peering, Transit Gateway, etc.).
+
+How It Works:
+  Every subnet in your VPC must be associated with a route table.
+  When an instance in that subnet sends traffic, the route table decides the next hop.
+  Example:
+    10.0.0.0/16 → local → traffic stays inside the VPC.
+    0.0.0.0/0 → igw-12345 → traffic goes out to the internet via Internet Gateway.
+    0.0.0.0/0 → nat-67890 → traffic goes out via NAT Gateway (for private subnets).
+
+In Short:
+  A route table is the traffic director of your VPC. 
+  It decides whether packets stay inside the VPC, go to the internet, or travel to another network (like peered VPCs or on-prem via Direct Connect).
+
+Key Point:
+  The route table only decides outbound paths (where traffic goes when leaving the subnet).
+  Inbound traffic (from the internet back to the instance) is controlled by security groups and network ACLs, not the route table.
+
+
+Internet Gateway (IGW):
+-----------------------
+An IGW is a doorway between your VPC and the internet.
+It allows resources in public subnets (with public IPs) to send/receive traffic directly from the internet.
+Must be attached to your VPC and referenced in the route table.
+
+Use case:
+A web server in a public subnet needs to be accessible worldwide.
+Route table entry: 0.0.0.0/0 → Internet Gateway.
+
+
+NAT Gateway:
+-------------
+A NAT Gateway is a translator that lets private subnet instances access the internet outbound only.
+It sits in a public subnet with an Elastic IP.
+Private instances send traffic to the NAT Gateway → NAT Gateway forwards it to the internet via IGW → response comes back → NAT Gateway → private instance.
+The internet cannot initiate connections back to private instances.
+
+Outbound Traffic Flow (Private Instance → Internet):
+1. Private Instance Sends Request
+   Example: Your EC2 in a private subnet wants to run yum update.
+   It generates a packet with its private IP as the source.
+2. Private Subnet Route Table
+   The route table says:
+     0.0.0.0/0 → NAT Gateway
+   So the packet is forwarded to the NAT Gateway in the public subnet.
+3. NAT Gateway Translation
+   NAT Gateway receives the packet.
+   It replaces the private IP with its own Elastic IP (public).
+   This is the “Network Address Translation” step.
+4. Internet Gateway (IGW)
+   The NAT Gateway forwards the packet to the Internet Gateway attached to the VPC.
+   From the internet’s perspective, the request comes from the NAT Gateway’s public IP.
+5. Response from Internet
+   The external server (e.g., yum repo) replies to the Elastic IP.
+   The Internet Gateway delivers the response back to the NAT Gateway.
+6. NAT Gateway Reverse Translation
+   NAT Gateway maps the response back to the original private IP of the EC2 instance.
+   It forwards the packet into the private subnet.
+7. Private Instance Receives Response
+   The EC2 instance gets the reply as if it had communicated directly with the internet.
+
+In Short:
+Private instances → NAT Gateway → IGW → Internet → back through NAT → private instance.
+
+
