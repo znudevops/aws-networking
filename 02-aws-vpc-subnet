@@ -73,7 +73,6 @@ Commonly used for resources that should stay internal, such as:
 
 That’s why it’s “outbound only.”
 
-
 Inbound traffic → Data coming into your resources from outside.
   > Users are accessing a web server hosted in EC2 server.
   > SSH connection from your laptop into EC2 server.
@@ -81,6 +80,9 @@ Inbound traffic → Data coming into your resources from outside.
 Outbound traffic → Data going out from your resources
   > A server is downloading updates.
 
+Outbound vs. Inbound:
+Outbound traffic: Controlled by the route table (decides the next hop: IGW, NAT, local, etc.).
+Inbound traffic: Controlled by Security Groups (SGs) and Network ACLs (NACLs), not the route table.
 
 Stateful rules → A stateful firewall remember state of the connection.
   > In AWS Security groups are stateful.
