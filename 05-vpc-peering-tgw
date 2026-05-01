@@ -1,1 +1,37 @@
+VPC Peering:
+-------------
+A networking connection between two VPCs that allows instances to communicate using private IPv4/IPv6 addresses.
+Share resources between two VPCs (e.g., databases, monitoring tools).
+Enable communication across accounts or regions without exposing traffic to the public internet.
+Low latency, secure, cost‑effective.
 
+How:
+Create a peering connection between VPC A and VPC B.
+Accept the request from the other VPC.
+Update route tables in both VPCs to send traffic for the peer’s CIDR block through the peering connection.
+Adjust security groups/NACLs to allow traffic.
+
+Limitations:
+Non‑transitive: If A peers with B, and B peers with C, A cannot talk to C.
+CIDR overlap not allowed.
+Best for 1:1 connections or small setups
+
+AWS Transit Gateway (TGW):
+----------------------------
+A regional virtual router that acts as a central hub for connecting multiple VPCs, VPNs, and Direct Connect gateways.
+Simplifies complex multi‑VPC architectures.
+Supports transitive routing (VPC A ↔ TGW ↔ VPC B ↔ TGW ↔ VPC C).
+Scales to thousands of VPCs and hybrid connections.
+Centralized management of routing and security policies.
+
+How:
+Create a Transit Gateway in your region.
+Attach VPCs, VPNs, or Direct Connect gateways to it.
+Configure Transit Gateway route tables (propagation + association).
+Traffic flows through TGW like a hub‑and‑spoke model.
+
+Benefits:
+Scalability: Handles large, complex environments.
+Centralized control: One hub instead of many peering links.
+Hybrid connectivity: Connects on‑premises networks with AWS.
+Transitive routing: Unlike VPC peering, traffic can flow across multiple VPCs.
